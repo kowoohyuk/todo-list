@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { FaTimes, FaPencilAlt } from 'react-icons/fa'
 import EditTodo from './EditTodo'
 import Button from '../Button'
+import { useTodoState, useTodoDispatch, useHistoyDispatch } from '../Context'
 
 const TodoItemBlock = styled.div`
   background-color: #fff;
@@ -52,22 +53,75 @@ const Content = styled.textarea`
   }
 `
 
-const TodoItem = ({
-  onDragStart,
+// const dragSate = useRef({ pageX: 0, pageY: 0 })
 
-  onDragOver,
+const TodoItem = ({
+  columnIdx,
   itemId,
-  onDragEnd,
   title,
   content,
   index,
   onChange,
   onRemove
 }) => {
-  // const [inputs, setInputs] = useState({
-  //   title,
-  //   content
-  // });
+  const dragItem = useRef()
+  const dragNode = useRef()
+  const dragContext = useRef()
+
+  const [dragging, SetDargging] = useState(false)
+  const dispatch = useTodoDispatch()
+  const state = useTodoState()
+  const onDragStart = (e, idx, params) => {
+    dragItem.current = idx
+    dragNode.current = e.target
+    dragContext.current = params
+    setTimeout(() => {
+      SetDargging(true)
+      e.target.style.opacity = '0.4'
+    }, 0)
+  }
+  const onDragEnd = e => {
+    if (dragging) e.target.style.opacity = '1'
+    console.log(dragNode, 'end')
+    SetDargging(false)
+    dragNode.current.removeEventListener('dragend', onDragEnd)
+    dragItem.current = null
+    dragNode.current = null
+    dragContext.current = null
+  }
+  const onDargEnter = (e, params) => {
+    const currentItem = dragItem.current
+    console.log(params, 'enter')
+    if (!dragNode.current) {
+      // debugger
+      console.log(dragNode, 'curr', params)
+      // let temp = [...state]
+      // temp[params.columnIdx].todoItems[currentItem.index] =
+      //   temp[params.columnIdx].todoItems[params.index]
+      // temp[params.columnIdx].todoItems[params.index] = dragContext.current
+      // console.log(temp)
+      // dispatch({
+      //   type: 'UPDATEITEM',
+      //   idx: params.columnIdx,
+      //   todos: temp
+      // })
+    }
+  }
+
+  // const onDragOver = e => {
+  //   // const gapY = e.pageY - dragSate.current.pageY
+  //   // // e.pageX - dragSate.current.pageX, 'X'
+  //   // const i = e.target.id.replace(/column/gi,"").replace(/item/gi,"_").split("_");
+
+  //   e.stopPropagation()
+  // }
+  //  const onDrop = e => {
+
+  //   e.preventDefault()
+  //   e.stopPropagation()
+
+  // }
+
   const [toggle, setToggle] = useState(false)
   const onToggle = () => setToggle(!toggle)
   const onTextChange = inputs => {
@@ -75,13 +129,27 @@ const TodoItem = ({
     onChange(inputs, index)
     onToggle()
   }
+
   return (
     <TodoItemBlock
-      id={itemId}
-      draggable='true'
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
+      // id={itemId}
+      draggable
+      onDragStart={e =>
+        onDragStart(e, { columnIdx, index }, { title, content })
+      }
+      // onDragOver={onDragOver}
+      // onDrop={onDrop}
       onDragEnd={onDragEnd}
+      // onDragEnter={
+      //   dragging
+      //     ? e => {
+      //         onDargEnter(e, { columnIdx, index })
+      //       }
+      //     : null
+      // }
+      onDragEnter={e => {
+        onDargEnter(e, { columnIdx, index })
+      }}
     >
       <Button onClick={onToggle}>
         <FaPencilAlt />

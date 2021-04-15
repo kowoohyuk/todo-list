@@ -3,11 +3,7 @@ import styled from 'styled-components'
 import CreateTodo from './CreateTodo'
 import TodoColumnHead from './TodoColumnHead'
 import TodoItem from './TodoItem'
-import {
-  useTodoState,
-  useTodoDispatch,
-  useHistoyDispatch,
-} from '../Context'
+import { useTodoState, useTodoDispatch, useHistoyDispatch } from '../Context'
 
 const TodoColumnBlock = styled.div``
 const TodoItemsBlock = styled.div``
@@ -18,7 +14,7 @@ const TodoColumn = ({ title, index }) => {
   const dispatch = useTodoDispatch()
   const hisDispatch = useHistoyDispatch()
   const state = useTodoState()
-  const todoItems = state[index].todoItems;
+  const todoItems = state[index].todoItems
   const [toggle, setToggle] = useState(false)
   const [count, setCount] = useState(todoItems.length)
   const onSubmit = inputs => {
@@ -28,9 +24,9 @@ const TodoColumn = ({ title, index }) => {
       itemTitle: { ...inputs }.title,
       columnTitle: state[index].title,
       time: new Date().toUTCString()
-    });
-    setToggle(!toggle);
-    setCount(count + 1);
+    })
+    setToggle(!toggle)
+    setCount(count + 1)
   }
 
   const onAllRemove = () => {
@@ -45,17 +41,17 @@ const TodoColumn = ({ title, index }) => {
       columnTitle: state[index].title,
       time: new Date().toUTCString()
     })
-    const tmp = todoItems.filter((v, i) => i !== itemIndex);
-    dispatch({ type: 'REMOVEITEM', idx: index, todos : tmp });
-    setCount(count - 1);
+    const tmp = todoItems.filter((v, i) => i !== itemIndex)
+    dispatch({ type: 'REMOVEITEM', idx: index, todos: tmp })
+    setCount(count - 1)
   }
 
   const onTodoItemChange = (value, idx) => {
     const tmp = todoItems.map((v, i) => {
-      if (i === idx) v = value;
-      return v;
+      if (i === idx) v = value
+      return v
     })
-    dispatch({ type: 'UPDATEITEM', idx: index, todos : tmp });
+    dispatch({ type: 'UPDATEITEM', idx: index, todos: tmp })
     hisDispatch({
       type: '수정',
       itemTitle: value.title,
@@ -63,56 +59,76 @@ const TodoColumn = ({ title, index }) => {
       time: new Date().toUTCString()
     })
   }
-  const dragSate = useRef({ pageX: 0, pageY: 0 })
-  const [drag, SetDarg] = useState(false)
-  const onDragStart = e => {
-    dragSate.current = { pageX: e.pageX, pageY: e.pageY }
-    e.dataTransfer.setData('item_id', e.target.id)
-    e.dataTransfer.setData('item_Y', e.pageY)
-    SetDarg(drag => true)
-    setTimeout(() => {
-      e.target.style.opacity = '0.4'
-    }, 0)
-  }
+  // const dragItem = useRef()
+  // const dragNode = useRef()
 
-  const onDragOver = e => {
-    console.log(e.pageY - dragSate.current.pageY, 'Y')
-    console.log(e.pageX - dragSate.current.pageX, 'X')
-    e.stopPropagation()
-  }
+  // // const dragSate = useRef({ pageX: 0, pageY: 0 })
+  // const [dragging, SetDargging] = useState(false)
 
-  const DragOver = e => {
-    e.preventDefault()
-  }
+  // const onDargEnter = (e, params) => {
+  //   const currentItem = dragItem.current
+  //   if (e.target !== dragNode.current) {
+  //   }
+  // }
 
-  const onDragEnd = e => {
-    if(drag)  e.target.style.opacity = '1'
-  }
-  const onDrop = e => {
-    SetDarg(!drag)
-    e.preventDefault()
-    e.stopPropagation()
-    const itemId = e.dataTransfer.getData('item_id')
-    const item = document.getElementById(itemId)
-    //  item.style.display = 'block'
-    // e.target.insertBefore(item,);
-    item.style.opacity = '1'
-    console.log(itemId)
-  }
+  // const onDragStart = (e, idx, params) => {
+  //   // dragSate.current = { pageX: e.pageX, pageY: e.pageY }
+  //   // e.dataTransfer.setData('item_id', e.target.id)
+  //   dragItem.current = idx
+  //   dragNode.current = e.target
+  //   console.log(idx, params)
+    
+  //   setTimeout(() => {
+  //     SetDargging(true)
+  //     e.target.style.opacity = '0.4'
+  //   }, 0)
+  // }
 
-  const TodoItems = todoItems.map((v, index) => (
+  // const onDragOver = e => {
+  //   // const gapY = e.pageY - dragSate.current.pageY
+  //   // // e.pageX - dragSate.current.pageX, 'X'
+  //   // const i = e.target.id.replace(/column/gi,"").replace(/item/gi,"_").split("_");
+
+  //   e.stopPropagation()
+  // }
+
+  // const DragOver = e => {
+  //   e.preventDefault()
+  // }
+
+  // const onDragEnd = e => {
+  //   if (dragging) e.target.style.opacity = '1'
+  //   SetDargging(!dragging)
+  //   dragItem.current = null
+  //   dragNode.current = null
+  // }
+  // const onDrop = e => {
+  //   SetDargging(!dragging)
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   const itemId = e.dataTransfer.getData('item_id')
+  //   const item = document.getElementById(itemId)
+  //   //  item.style.display = 'block'
+  //   // e.target.insertBefore(item,);
+  //   e.target.appendChild(item)
+  //   item.style.opacity = '1'
+  // }
+
+  const TodoItems = todoItems.map((v, idx) => (
     <TodoItem
       {...v}
-      index={index}
+      index={idx}
       onChange={onTodoItemChange}
       onRemove={onRemove}
-      key={index}
-      itemId={`${columnId}item${index}`}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDragEnd={onDragEnd}
+      key={idx}
+      columnIdx={index}
+      itemId={`${columnId}item${idx}`}
+      // onDragStart={onDragStart}
+      // onDragOver={onDragOver}
+      // onDragEnd={onDragEnd}
+      // onDragEnter={onDargEnter}
     />
-    ))
+  ))
   return (
     <TodoColumnBlock>
       <TodoColumnHead
@@ -127,7 +143,7 @@ const TodoColumn = ({ title, index }) => {
         toggle={toggle}
         setToggle={setToggle}
       ></CreateTodo>
-      <TodoItemsBlock id={columnId} onDrop={onDrop} onDragOver={DragOver}>
+      <TodoItemsBlock id={columnId} >
         {TodoItems}
       </TodoItemsBlock>
     </TodoColumnBlock>
