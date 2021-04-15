@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import CreateTodo from './CreateTodo'
 import TodoColumnHead from './TodoColumnHead'
@@ -71,30 +71,40 @@ const TodoColumn = ({ title, todoItems, index }) => {
       })
     )
   }
+  const dragSate = useRef({ pageX: 0, pageY: 0 })
+  const [drag, SetDarg] = useState(false)
   const onDragStart = e => {
+    dragSate.current = { pageX: e.pageX, pageY: e.pageY }
     e.dataTransfer.setData('item_id', e.target.id)
+    e.dataTransfer.setData('item_Y', e.pageY)
+    SetDarg(drag => true)
     setTimeout(() => {
-      //e.target.style.display = 'none'
+      e.target.style.opacity = '0.4'
     }, 0)
   }
 
   const onDragOver = e => {
+    console.log(e.pageY - dragSate.current.pageY, 'Y')
+    console.log(e.pageX - dragSate.current.pageX, 'X')
     e.stopPropagation()
   }
 
   const DragOver = e => {
-    debugger;
-    e.stopPropagation()
     e.preventDefault()
   }
+
+  const onDragEnd = e => {
+    if(drag)  e.target.style.opacity = '1'
+  }
   const onDrop = e => {
-    console.log(e)
-    e.stopPropagation()
+    SetDarg(!drag)
     e.preventDefault()
+    e.stopPropagation()
     const itemId = e.dataTransfer.getData('item_id')
     const item = document.getElementById(itemId)
-    // item.style.display = 'block'
-    debugger
+    //  item.style.display = 'block'
+    // e.target.insertBefore(item,);
+    item.style.opacity = '1'
     console.log(itemId)
   }
 
@@ -108,6 +118,7 @@ const TodoColumn = ({ title, todoItems, index }) => {
       itemId={`${columnId}item${index}`}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
     />
   ))
   return (

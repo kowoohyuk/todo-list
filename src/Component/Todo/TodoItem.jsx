@@ -48,7 +48,8 @@ const TodoItem = ({
   content,
   index,
   onChange,
-  onRemove
+  onRemove,
+  onDragEnd
 }) => {
   return (
     <TodoItemBlock
@@ -56,6 +57,7 @@ const TodoItem = ({
       draggable='true'
       onDragStart={onDragStart}
       onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
     >
       <Button onClick={() => onRemove(index)}>
         <FaTimes></FaTimes>
