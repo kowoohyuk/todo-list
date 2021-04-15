@@ -21,7 +21,7 @@ const TodoColumn = ({ title, todoItems, index }) => {
     title: '',
     content: ''
   })
-
+  const columnId = `column${index}`
   const onClick = () => setToggle(!toggle)
   const dispatch = useTodoDispatch()
   const hisDispatch = useHistoyDispatch()
@@ -71,6 +71,32 @@ const TodoColumn = ({ title, todoItems, index }) => {
       })
     )
   }
+  const onDragStart = e => {
+    e.dataTransfer.setData('item_id', e.target.id)
+    setTimeout(() => {
+      //e.target.style.display = 'none'
+    }, 0)
+  }
+
+  const onDragOver = e => {
+    e.stopPropagation()
+  }
+
+  const DragOver = e => {
+    debugger;
+    e.stopPropagation()
+    e.preventDefault()
+  }
+  const onDrop = e => {
+    console.log(e)
+    e.stopPropagation()
+    e.preventDefault()
+    const itemId = e.dataTransfer.getData('item_id')
+    const item = document.getElementById(itemId)
+    // item.style.display = 'block'
+    debugger
+    console.log(itemId)
+  }
 
   const TodoItems = todoItems.map((v, index) => (
     <TodoItem
@@ -79,6 +105,9 @@ const TodoColumn = ({ title, todoItems, index }) => {
       onChange={onTodoItemChange}
       onRemove={onRemove}
       key={index}
+      itemId={`${columnId}item${index}`}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
     />
   ))
   return (
@@ -97,7 +126,9 @@ const TodoColumn = ({ title, todoItems, index }) => {
         onSubmit={onSubmit}
         toggle={toggle}
       ></CreateTodo>
-      <TodoItemsBlock>{TodoItems}</TodoItemsBlock>
+      <TodoItemsBlock id={columnId} onDrop={onDrop} onDragOver={DragOver}>
+        {TodoItems}
+      </TodoItemsBlock>
     </TodoColumnBlock>
   )
 }

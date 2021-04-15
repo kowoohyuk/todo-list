@@ -35,7 +35,6 @@ let HistoryItems = JSON.parse(localStorage.getItem('historyList')).map(
 )
 
 export default function HistoryList ({ children }) {
-  console.log(useHistoyState())
   localStorage.setItem('historyList', JSON.stringify(useHistoyState()))
   HistoryItems = useHistoyState()
     .map(({ text, time }, i) => (

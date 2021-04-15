@@ -1,7 +1,7 @@
-import React from "react";
-import styled from 'styled-components';
-import { FaTimes } from 'react-icons/fa';
-import Button from "../Button";
+import React from 'react'
+import styled from 'styled-components'
+import { FaTimes } from 'react-icons/fa'
+import Button from '../Button'
 
 const TodoItemBlock = styled.div`
   background-color: #fff;
@@ -20,7 +20,7 @@ const TodoItemBlock = styled.div`
       color: #ffcc00;
     }
   }
-`;
+`
 
 const Title = styled.input.attrs({
   type: 'text'
@@ -30,7 +30,7 @@ const Title = styled.input.attrs({
   padding-right: 1rem;
   font-weight: 600;
   margin-bottom: 0.3rem;
-`;
+`
 
 const Content = styled.textarea`
   border: 0;
@@ -38,16 +38,40 @@ const Content = styled.textarea`
   width: 100%;
   overflow-y: visible;
   height: 3rem;
-`;
+`
 
-const TodoItem = ({ title, content, index, onChange, onRemove }) => {
+const TodoItem = ({
+  onDragStart,
+  onDragOver,
+  itemId,
+  title,
+  content,
+  index,
+  onChange,
+  onRemove
+}) => {
   return (
-    <TodoItemBlock>
-      <Button onClick={() => onRemove(index)}><FaTimes></FaTimes></Button>
-      <Title name="title" onChange={({target}) => onChange(target, index)} value={title}/>
-      <Content name="content" onChange={({target}) => onChange(target, index)} value={content}/>
+    <TodoItemBlock
+      id={itemId}
+      draggable='true'
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+    >
+      <Button onClick={() => onRemove(index)}>
+        <FaTimes></FaTimes>
+      </Button>
+      <Title
+        name='title'
+        onChange={({ target }) => onChange(target, index)}
+        value={title}
+      />
+      <Content
+        name='content'
+        onChange={({ target }) => onChange(target, index)}
+        value={content}
+      />
     </TodoItemBlock>
-  );
+  )
 }
 
-export default TodoItem;
+export default TodoItem

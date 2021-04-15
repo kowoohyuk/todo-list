@@ -41,7 +41,6 @@ export default function HistoryItem ({ author, text, time, profile }) {
   useEffect(() => {
     const interval = setInterval(() => {
       SetTime(Math.ceil((new Date() - new Date(time)) / 600000))
-      console.log('This will run every second!')
     }, 1000)
     return () => clearInterval(interval)
   }, [time])

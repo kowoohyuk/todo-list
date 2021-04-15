@@ -14,7 +14,7 @@ const TodoContainerBlock = styled.div`
 const TodoContainer = () => {
   const data = useTodoState()
   const TodoColumns = data.map((v, index) => (
-    <TodoColumn {...v} index={index} key={index} />
+    <TodoColumn  {...v}  index={index} key={index} />
   ))
   return <TodoContainerBlock>{TodoColumns}</TodoContainerBlock>
 }
