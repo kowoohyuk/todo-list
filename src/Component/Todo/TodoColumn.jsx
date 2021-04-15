@@ -7,69 +7,61 @@ import {
   useTodoState,
   useTodoDispatch,
   useHistoyDispatch,
-  useTodoUserNameContext
 } from '../Context'
 
 const TodoColumnBlock = styled.div``
 const TodoItemsBlock = styled.div``
 
-const TodoColumn = ({ title, todoItems, index }) => {
-  const [toggle, setToggle] = useState(false)
-  const [todos, setTodos] = useState(todoItems)
-  const [count, setCount] = useState(todoItems.length)
-  const [inputs, setInputs] = useState({
-    title: '',
-    content: ''
-  })
+const TodoColumn = ({ title, index }) => {
   const columnId = `column${index}`
   const onClick = () => setToggle(!toggle)
   const dispatch = useTodoDispatch()
   const hisDispatch = useHistoyDispatch()
   const state = useTodoState()
-  const name = useTodoUserNameContext()
-  const onSubmit = () => {
-    setCount(count + 1)
-    setInputs({ title: '', content: '' })
-    setToggle(!toggle)
-    dispatch({ type: 'UPDATEITEM', idx: index, item: { ...inputs } })
+  const todoItems = state[index].todoItems;
+  const [toggle, setToggle] = useState(false)
+  const [count, setCount] = useState(todoItems.length)
+  const onSubmit = inputs => {
+    dispatch({ type: 'CREATEITEM', idx: index, item: { ...inputs } })
     hisDispatch({
       type: '생성',
       itemTitle: { ...inputs }.title,
       columnTitle: state[index].title,
       time: new Date().toUTCString()
-    })
+    });
+    setToggle(!toggle);
+    setCount(count + 1);
   }
-  const onCancel = () => {
-    setToggle(!toggle)
-    setInputs({ title: '', content: '' })
-  }
-  const onChange = ({ target }) => {
-    setInputs({ ...inputs, [target.name]: target.value })
-  }
+
   const onAllRemove = () => {
-    setTodos([])
     dispatch({ type: 'RESETITEM', idx: index })
     setCount(0)
   }
   const onRemove = itemIndex => {
-    dispatch({ type: 'REMOVEITEM', idx: index, itemIdx: itemIndex })
     hisDispatch({
-      type: 'REMOVE',
+      type: '삭제',
       title: '설계하기',
       itemTitle: state[index].todoItems[itemIndex].title,
       columnTitle: state[index].title,
       time: new Date().toUTCString()
     })
-    setCount(count - 1)
+    const tmp = todoItems.filter((v, i) => i !== itemIndex);
+    dispatch({ type: 'REMOVEITEM', idx: index, todos : tmp });
+    setCount(count - 1);
   }
 
-  const onTodoItemChange = (e, index) => {
-    setTodos(
-      todos.map((v, i) => {
-        if (i === index) v[e.target.name] = e.target.value
-        return v
-      })
-    )
+  const onTodoItemChange = (value, idx) => {
+    const tmp = todoItems.map((v, i) => {
+      if (i === idx) v = value;
+      return v;
+    })
+    dispatch({ type: 'UPDATEITEM', idx: index, todos : tmp });
+    hisDispatch({
+      type: '수정',
+      itemTitle: value.title,
+      columnTitle: state[index].title,
+      time: new Date().toUTCString()
+    })
   }
   const dragSate = useRef({ pageX: 0, pageY: 0 })
   const [drag, SetDarg] = useState(false)
@@ -120,7 +112,7 @@ const TodoColumn = ({ title, todoItems, index }) => {
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     />
-  ))
+    ))
   return (
     <TodoColumnBlock>
       <TodoColumnHead
@@ -131,11 +123,9 @@ const TodoColumn = ({ title, todoItems, index }) => {
         title={title}
       ></TodoColumnHead>
       <CreateTodo
-        inputs={inputs}
-        onChange={onChange}
-        onCancel={onCancel}
         onSubmit={onSubmit}
         toggle={toggle}
+        setToggle={setToggle}
       ></CreateTodo>
       <TodoItemsBlock id={columnId} onDrop={onDrop} onDragOver={DragOver}>
         {TodoItems}
