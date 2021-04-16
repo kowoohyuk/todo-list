@@ -75,6 +75,8 @@ const TodoItem = ({
     dragItem.current = idx
     dragNode.current = e.target
     dragContext.current = params
+    console.log(idx, "str")
+    e.dataTransfer.setData('dragItem', idx)
     setTimeout(() => {
       SetDargging(true)
       e.target.style.opacity = '0.4'
@@ -82,30 +84,32 @@ const TodoItem = ({
   }
   const onDragEnd = e => {
     if (dragging) e.target.style.opacity = '1'
-    console.log(dragNode, 'end')
+    // console.log(dragNode, 'end')
     SetDargging(false)
-    dragNode.current.removeEventListener('dragend', onDragEnd)
-    dragItem.current = null
-    dragNode.current = null
-    dragContext.current = null
+    // dragNode.current.removeEventListener('dragend', onDragEnd)
+    // dragItem.current = null
+    // dragNode.current = null
+    // dragContext.current = null
   }
   const onDargEnter = (e, params) => {
     const currentItem = dragItem.current
     console.log(params, 'enter')
-    if (!dragNode.current) {
-      // debugger
-      console.log(dragNode, 'curr', params)
-      // let temp = [...state]
-      // temp[params.columnIdx].todoItems[currentItem.index] =
-      //   temp[params.columnIdx].todoItems[params.index]
-      // temp[params.columnIdx].todoItems[params.index] = dragContext.current
-      // console.log(temp)
-      // dispatch({
-      //   type: 'UPDATEITEM',
-      //   idx: params.columnIdx,
-      //   todos: temp
-      // })
-    }
+    console.log(dragItem.current, 'curr')
+    // console.log(e.dataTransfer.getData('dragItem'))
+    // if (!dragNode.current) {
+    //   // debugger
+    //   console.log(dragNode, 'curr', params)
+    //   // let temp = [...state]
+    //   // temp[params.columnIdx].todoItems[currentItem.index] =
+    //   //   temp[params.columnIdx].todoItems[params.index]
+    //   // temp[params.columnIdx].todoItems[params.index] = dragContext.current
+    //   // console.log(temp)
+    //   // dispatch({
+    //   //   type: 'UPDATEITEM',
+    //   //   idx: params.columnIdx,
+    //   //   todos: temp
+    //   // })
+    // }
   }
 
   // const onDragOver = e => {
