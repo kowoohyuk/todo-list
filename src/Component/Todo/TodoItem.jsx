@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FaTimes, FaPencilAlt } from 'react-icons/fa';
 import EditTodo from "./EditTodo";
 import Button from "../Button";
+import { Draggable } from 'react-beautiful-dnd'
 
 const TodoItemBlock = styled.div`
   background-color: #fff;
@@ -38,6 +39,7 @@ const Title = styled.input.attrs({
   padding-right: 1rem;
   font-weight: 600;
   margin-bottom: 0.3rem;
+  pointer-events: none;
 `;
 
 const Content = styled.textarea`
@@ -47,33 +49,35 @@ const Content = styled.textarea`
   width: 100%;
   overflow-y: visible;
   height: 3rem;
+  pointer-events: none;
   &:focus {
     outline: none;
   }
 `;
 
-const TodoItem = ({ title, content, index, onChange, onRemove }) => {
-  // const [inputs, setInputs] = useState({
-  //   title,
-  //   content
-  // });
+const TodoItem = ({ title, content, index, onChange, onRemove, id }) => {
   const [toggle, setToggle] = useState(false);
   const onToggle = () => setToggle(!toggle);
   const onTextChange = inputs => {
-    // setInputs(inputs);
     onChange(inputs, index);
     onToggle();
   }
   return (
-    <TodoItemBlock>
-      <Button onClick={onToggle}><FaPencilAlt/></Button>
-      <Button onClick={() => onRemove(index)}><FaTimes/></Button>
-      <TodoItemContent toggle={toggle}>
-        <Title name="title" value={title} readOnly/>
-        <Content name="content" value={content} readOnly/>
-      </TodoItemContent>
-      <EditTodo toggle={toggle} onToggle={onToggle} title={title} content={content} onTextChange={onTextChange}/>
-    </TodoItemBlock>
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+          <TodoItemBlock>
+            <Button onClick={onToggle}><FaPencilAlt/></Button>
+            <Button onClick={() => onRemove(index)}><FaTimes/></Button>
+            <TodoItemContent toggle={toggle}>
+              <Title name="title" value={title} readOnly/>
+              <Content name="content" value={content} readOnly/>
+            </TodoItemContent>
+            <EditTodo toggle={toggle} onToggle={onToggle} title={title} content={content} onTextChange={onTextChange}/>
+          </TodoItemBlock>
+        </div>
+      )}
+    </Draggable>
   );
 }
 
